@@ -44,11 +44,13 @@ APPS=("${APPS[@]}" "minitube" "popcorn-time" "smtube")
 
 # Names of programs which, when running, you wish to delay the screensaver.
 delay_progs=() # For example ('ardour2' 'gmpc')
-delay="$1"
-displays=""
+
+# Screensavers Names Software
+declare -a screensavers=("cinnamon-screensaver" "gnome-screensaver" "kscreensaver" "xautolock" "xscreensaver")
 
 # YOU SHOULD NOT NEED TO MODIFY ANYTHING BELOW THIS LINE
-declare -a screensavers=("cinnamon-screensaver" "gnome-screensaver" "kscreensaver" "xautolock" "xscreensaver")
+delay="$1"
+displays=""
 
 LOCKFILE="/var/run/lock/$(basename $0)" ;
 
@@ -82,9 +84,7 @@ function checkFullscreen() {
             # Check if Active Window (the foremost window) is in fullscreen state
             isActivWinFullscreen="$(DISPLAY=:0.${display} xprop -id ${activ_win_id} | grep _NET_WM_STATE_FULLSCREEN)"
             if [[ "${isActivWinFullscreen}" = *NET_WM_STATE_FULLSCREEN* ]]; then
-                isAppRunning
-                var=$?
-                if [[ ${var} -eq 1 ]]; then delayScreensaver; fi
+                if isAppRunning; then delayScreensaver; fi
             else
                 xset dpms
             fi
@@ -188,7 +188,7 @@ function isAppRunning() {
 
     fi
 
-    if [[ -n ${process} ]]; then return 1; else return 0; fi
+    if [[ -n ${process} ]]; then return 0; else return 1; fi
 
     }
 
