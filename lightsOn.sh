@@ -1,9 +1,15 @@
 #!/bin/bash
 # lightsOn.sh
-set -x
+#set -x
+
 # Copyright (c) 2013 iye.cba at gmail com
 # url: https://github.com/iye/lightsOn
 # This script is licensed under GNU GPL version 2.0 or above
+
+# Modified by Stephane HUC
+# year: 2015 >
+# url: https://github.com/hucste/lightsOn
+# email: devs@stephane-huc.net
 
 # Description: Bash script that prevents the screensaver and display power
 # management (DPMS) to be activated when you are watching Flash Videos
@@ -43,6 +49,8 @@ displays=""
 
 # YOU SHOULD NOT NEED TO MODIFY ANYTHING BELOW THIS LINE
 declare -a screensavers=("cinnamon-screensaver" "gnome-screensaver" "kscreensaver" "xautolock" "xscreensaver")
+
+LOCKFILE="/var/run/lock/$(basename $0)" ;
 
 function checkDelayProgs() {
     for prog in "${delay_progs[@]}"; do
@@ -204,14 +212,60 @@ function delayScreensaver() {
 
 }
 
+function manage_pid() {
+
+    pid="${$}"
+
+    if [[ -e "${LOCKFILE}" ]]; then
+        if [[ ! -d /proc/$(cat "${LOCKFILE}") ]]; then
+            rm "${LOCKFILE}"
+            stop
+        else
+            pid_lf=$(<"${LOCKFILE}")
+        fi
+
+        if [[ ${pid} && ${pid_lf} ]]; then
+            if [[ "${delay}" == "stop" ]]; then pid=${pid_lf}; fi
+            stop
+        fi
+    else
+        echo "${pid}" > "${LOCKFILE}"
+    fi
+
+    }
+
+function start() {
+
+    manage_pid
+    test_delay
+    detect_id_displays
+    detect_screensaver_used
+
+    while true; do
+        checkDelayProgs
+        checkFullscreen
+        sleep ${delay}
+    done
+
+    }
+
+function stop() {
+
+    kill -9 ${pid}
+    if [[ -e "${LOCKFILE}" ]]; then rm "${LOCKFILE}"; fi
+
+    exit 0
+
+    }
+
 function test_delay() {
 
     # If argument empty, use 50 seconds as default.
     if [ -z "${delay}" ]; then delay=50; fi
 
-    # If argument is not integer quit.
-    if [[ $1 = *[^0-9]* ]]; then
-        echo "The Argument \"$1\" is not valid, not an integer"
+    if [[ ${delay} = *[^0-9]* ]]; then
+        # If argument is not integer quit.
+        echo "The Argument '${delay}' is not valid, not an integer"
         echo "Please use the time in seconds you want the checks to repeat."
         echo "You want it to be ~10 seconds less than the time it takes your screensaver or DPMS to activate"
         exit 1
@@ -219,16 +273,4 @@ function test_delay() {
 
 }
 
-
-test_delay
-detect_id_displays
-detect_screensaver_used
-
-while true
-do
-    checkDelayProgs
-    checkFullscreen
-    sleep ${delay}
-done
-
-exit 0
+start
