@@ -173,7 +173,7 @@ function isAppRunning() {
                     case "${app_name}" in
                         "chromium-browser")
                             if [[ "$activ_win_title" = *${activ_app_name}* ]]; then
-                                process=$(pgrep -fc ".*((c|C)hrom(e|mium)).*flashp.*")
+                                process=$(pgrep -fc ".*((c|C)hrom(e|ium)).*flashp.*")
                             fi
                         ;;
                         "firefox")
