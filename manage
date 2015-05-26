@@ -1,0 +1,74 @@
+#!/bin/bash
+#set -x
+clear
+
+file_menu="lightsOn.desktop"
+folder="/home/$USER/.local/share/applications"
+
+declare -a menus=('gnome-panel' 'kicker' 'xfdesktop')
+declare -A menu_command=()
+menu_command['gnome-panel']='killall gnome-panel'   # Gnome
+menu_command['kicker']='dcop kicker kicker restart' # KDE
+menu_command['xfdesktop']='xfdesktop --reload'  # Xfce4
+
+option="$1"
+pwd="$(dirname $(readlink -f $0))"
+
+function delete_from_menu() {
+
+    if [[ -f "${folder}/${file_menu}" ]]; then
+
+        rm -f "${folder}/${file_menu}"
+
+        restart_desktop_menu
+    fi
+
+    }
+
+function file_version() {
+
+    version="$(stat -c "%x" "${pwd}/${file_menu}")"
+    version="${version:0:10}"
+
+    }
+
+function howto_launch() {
+
+    echo "Launch as: $0 (delete|install)"
+    exit
+
+    }
+
+function install_to_menu() {
+
+    if [[ -f "${pwd}/${file_menu}" ]]; then
+        cp "${pwd}/${file_menu}" "${folder}"
+        file_version
+
+        if [[ -f "${folder}/${file_menu}" ]]; then
+            sed -i -e "s#\$pwd#$pwd#g" "${folder}/${file_menu}"
+            sed -i -e "s#\$version#$version#g" "${folder}/${file_menu}"
+
+            restart_desktop_menu
+        fi
+    fi
+
+    }
+
+function restart_desktop_menu() {
+
+    for desktop in "${menu}"; do
+        if [[ -n $(pidof "${desktop}") ]]; then
+            $(${menu_command[${desktop}]})
+        fi
+    done
+
+    }
+
+
+case "${option}" in
+    "delete")   delete_from_menu ;;
+    "install")  install_to_menu ;;
+    "restart")  restart_desktop_menu ;;
+    *) howto_launch ;;
+esac

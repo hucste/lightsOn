@@ -1,6 +1,6 @@
 #!/bin/bash
 # lightsOn.sh
-set -x
+#set -x
 
 # Copyright (c) 2013 iye.cba at gmail com
 # url: https://github.com/iye/lightsOn
@@ -53,7 +53,8 @@ delay="$1"
 displays=""
 
 LOCKFILE="/var/run/lock/$(basename $0)" ;
-pwd="$(dirname $0)"
+#pwd="$(cd "$(dirname "$0")" && pwd)"
+pwd="$(dirname $(readlink -f $0))"
 
 function checkDelayProgs() {
     for prog in "${delay_progs[@]}"; do

@@ -1,0 +1,20 @@
+[Desktop Entry]
+Categories=System
+Comment=To manage screensaver when you are seeing videos into fullscreen mode
+Comment[fr]=Gestion de l'écran de veille durant la lecture vidéo en mode plein écran
+Encoding=UTF-8
+Exec=$pwd/lightsOn.sh
+GenericName=Screensaver Management
+GenericName[fr]=Gestion de l'écran de veille durant la lecture vidéo
+Icon=preferences-desktop-screensaver
+Keywords=System,Screensaver,Fullscreen,Videos
+Name=LightsOn
+StartupNotify=true
+Terminal=false
+Type=Application
+Version=$version
+
+[Desktop Action Stop]
+Exec=$pwd/ligthsOn.sh stop
+Name=Stop LightsOn
+Name[fr]=Arrêter LightsOn
