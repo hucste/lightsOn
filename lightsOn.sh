@@ -1,6 +1,6 @@
 #!/bin/bash
 # lightsOn.sh
-#set -x
+set -x
 
 # Copyright (c) 2013 iye.cba at gmail com
 # url: https://github.com/iye/lightsOn
@@ -53,6 +53,7 @@ delay="$1"
 displays=""
 
 LOCKFILE="/var/run/lock/$(basename $0)" ;
+pwd="$(dirname $0)"
 
 function checkDelayProgs() {
     for prog in "${delay_progs[@]}"; do
@@ -96,9 +97,11 @@ function checkFullscreen() {
 function detect_id_displays() {
     # enumerate all the attached screens
 
-    while read id; do
-        displays="${displays} ${id}"
-    done < <(xvinfo | sed -n 's/^screen #\([0-9]\+\)$/\1/p')
+    #while read id; do
+        #displays="${displays} ${id}"
+    #done < <(xvinfo | sed -n 's/^screen #\([0-9]\+\)$/\1/p')
+
+    displays=$(xvinfo | awk -F'#' '/^screen/ {print $2}' | xargs)
 }
 
 function detect_screensaver_used() {
@@ -112,6 +115,13 @@ function detect_screensaver_used() {
         screensaver=None
         echo "No screensaver detected"
     fi
+
+    }
+
+function icon_into_systray() {
+
+    # launch icon into systray
+    ${pwd}/indicator.py &
 
     }
 
@@ -238,6 +248,9 @@ function start() {
 
     manage_pid
     test_delay
+
+    icon_into_systray
+
     detect_id_displays
     detect_screensaver_used
 
