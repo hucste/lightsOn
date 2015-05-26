@@ -38,7 +38,7 @@ clear
 # VLC, Minitube, or Firefox or Chromium Flash Video are Fullscreen and disable
 # xscreensaver/kscreensaver and PowerManagement.
 
-declare -a APPS=("chromium" "firefox" "google-chrome" "opera")
+declare -a APPS=("chromium-browser" "firefox" "google-chrome" "opera")
 APPS=("${APPS[@]}" "gnome-mplayer" "mplayer" "mplayer2" "mpv" "smplayer" "totem" "vlc")
 APPS=("${APPS[@]}" "minitube" "popcorn-time" "smtube")
 APPS=("${APPS[@]}" "plugin-container") # plugin-container is for flashplayer
@@ -164,24 +164,24 @@ function isAppRunning() {
 
         case "${app_name}" in
 
-            "chromium"|"firefox"|"google-chrome"|"opera")
+            "chromium-browser"|"firefox"|"google-chrome"|"opera")
                 # detect if flashplayer run
-                if $(lsof -p ${activ_win_pid} | grep flashplayer.so); then
+                if $(lsof -p ${activ_win_pid} | grep -i "flashplayer.so"); then
                     process=$(pidof "${activ_app_name}")
-                #else
-                     #other method to detect if flashplayer run
-                    #case "${app_name}" in
-                        #"chromium")
-                            #if [[ "$activ_win_title" = *exe* ]]; then
-                                #process=$(pgrep -lfc ".*((c|C)hrome|chromium).*flashp.*")
-                            #fi
-                        #;;
-                        #"firefox")
-                            #if [[ "$activ_win_title" = *unknown* || "$activ_win_title" = *plugin-container* ]]; then
-                                #process=$(pgrep -l plugin-containe | grep -wc plugin-containe)
-                            #fi
-                        #;;
-                    #esac
+                else
+                    # other method to detect if flashplayer run
+                    case "${app_name}" in
+                        "chromium-browser")
+                            if [[ "$activ_win_title" = *${activ_app_name}* ]]; then
+                                process=$(pgrep -fc ".*((c|C)hrom(e|mium)).*flashp.*")
+                            fi
+                        ;;
+                        "firefox")
+                            if [[ "$activ_win_title" = *unknown* || "$activ_win_title" = *plugin-container* ]]; then
+                                process=$(pgrep -l plugin-containe | grep -wc plugin-containe)
+                            fi
+                        ;;
+                    esac
 
                 fi
 
