@@ -41,6 +41,7 @@ clear
 declare -a APPS=("chromium" "firefox" "google-chrome" "opera")
 APPS=("${APPS[@]}" "gnome-mplayer" "mplayer" "mplayer2" "mpv" "smplayer" "totem" "vlc")
 APPS=("${APPS[@]}" "minitube" "popcorn-time" "smtube")
+APPS=("${APPS[@]}" "plugin-container") # plugin-container is for flashplayer
 
 # Names of programs which, when running, you wish to delay the screensaver.
 delay_progs=() # For example ('ardour2' 'gmpc')
@@ -167,20 +168,20 @@ function isAppRunning() {
                 # detect if flashplayer run
                 if $(lsof -p ${activ_win_pid} | grep flashplayer.so); then
                     process=$(pidof "${activ_app_name}")
-                else
-                    # other method to detect if flashplayer run
-                    case "${app_name}" in
-                        "chromium")
-                            if [[ "$activ_win_title" = *exe* ]]; then
-                                process=$(pgrep -lfc ".*((c|C)hrome|chromium).*flashp.*")
-                            fi
-                        ;;
-                        "firefox")
-                            if [[ "$activ_win_title" = *unknown* || "$activ_win_title" = *plugin-container* ]]; then
-                                process=$(pgrep -l plugin-containe | grep -wc plugin-containe)
-                            fi
-                        ;;
-                    esac
+                #else
+                     #other method to detect if flashplayer run
+                    #case "${app_name}" in
+                        #"chromium")
+                            #if [[ "$activ_win_title" = *exe* ]]; then
+                                #process=$(pgrep -lfc ".*((c|C)hrome|chromium).*flashp.*")
+                            #fi
+                        #;;
+                        #"firefox")
+                            #if [[ "$activ_win_title" = *unknown* || "$activ_win_title" = *plugin-container* ]]; then
+                                #process=$(pgrep -l plugin-containe | grep -wc plugin-containe)
+                            #fi
+                        #;;
+                    #esac
 
                 fi
 
@@ -188,6 +189,12 @@ function isAppRunning() {
                     process=$(pidof "${activ_app_name}")
                 fi
 
+            ;;
+
+            "plugin-container")
+                if [[ "${activ_win_title}" = *${activ_app_name}* ]]; then
+                    process=$(pidof "${app_name}")
+                fi
             ;;
 
             *)
