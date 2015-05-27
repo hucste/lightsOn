@@ -74,7 +74,7 @@ function checkFullscreen() {
         #get id of active window and clean output
         activ_win_id="$(DISPLAY=:0.${display} xprop -root _NET_ACTIVE_WINDOW)"
         #activ_win_id=${activ_win_id#*# } #gives error if xprop returns extra ", 0x0" (happens on some distros)
-        activ_win_id=${activ_win_id:40:9}
+        activ_win_id="${activ_win_id:40:9}"
 
         # Skip invalid window ids (commented as I could not reproduce a case
         # where invalid id was returned, plus if id invalid
@@ -83,14 +83,15 @@ function checkFullscreen() {
         #     continue
         #fi
 
-        if [[ -n $activ_win_id ]]; then
+        if [[ -n "${activ_win_id}" ]]; then
             # Check if Active Window (the foremost window) is in fullscreen state
-            isActivWinFullscreen="$(DISPLAY=:0.${display} xprop -id ${activ_win_id} | grep _NET_WM_STATE_FULLSCREEN)"
-            if [[ "${isActivWinFullscreen}" = *NET_WM_STATE_FULLSCREEN* ]]; then
-                if isAppRunning; then delayScreensaver; fi
-            else
-                xset dpms
-            fi
+            #isActivWinFullscreen="$(DISPLAY=:0.${display} xprop -id ${activ_win_id} | grep _NET_WM_STATE_FULLSCREEN)"
+            #if [[ "${isActivWinFullscreen}" = *NET_WM_STATE_FULLSCREEN* ]]; then
+                #if isAppRunning; then delayScreensaver; fi
+            #else
+                #xset dpms
+            #fi
+            if isAppRunning; then delayScreensaver; else xset dpms; fi
         fi
 
     done
@@ -145,7 +146,7 @@ function in_array() {
 }
 
 function isAppRunning() {
-    # check if active windows is mplayer, vlc or firefox
+    # check if active windows is mplayer, vlc or firefox...
 
     #Get title of active window
     activ_win_id="$(xprop -id ${activ_win_id})"
@@ -186,20 +187,14 @@ function isAppRunning() {
                 fi
 
                 if [[ -z "${process}" && "${activ_win_title}" = *${activ_app_name}* ]]; then
-                    process=$(pidof "${activ_app_name}")
-                fi
-
-            ;;
-
-            "plugin-container")
-                if [[ "${activ_win_title}" = *${activ_app_name}* ]]; then
                     process=$(pidof "${app_name}")
                 fi
+
             ;;
 
             *)
                 if [[ "${activ_win_title}" = *${activ_app_name}* ]]; then
-                    process=$(pidof "${activ_app_name}")
+                    process=$(pidof "${app_name}")
                 fi
             ;;
         esac
