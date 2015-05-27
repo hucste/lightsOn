@@ -2,13 +2,13 @@ LightsOn
 ========
 
 Bash script that prevents the screensaver and display power management (DPMS)
- to be activated when you are watching Videos (Flash, HTML5) into fullscreen
- with Browser Web, or videos softwares supported into GNU/Linux.
+ to be activated when you are watching videos (Flash, HTML5) with Browser Web, 
+ or videos softwares supported into GNU/Linux.
 
 Authors
 -------
 
-*iye*: <iye.ca@gmail.com> <br >
+**iye**: <iye.ca@gmail.com> <br >
 *Git*: https://github.com/iye/lightsOn
 
 Modified by:  <br >
@@ -34,6 +34,10 @@ USE
 If you don't pass an option, the checks are done every 50 seconds. <br >
 'stop' is option to stop correctly LightsOn!
 
+The script 'manage' is a tool to install or delete application into 
+ Menu Applications > System
+
+Use-it, after making executable, as: ./manage (delete|install)
 
 ---------
 
