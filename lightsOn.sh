@@ -1,6 +1,6 @@
 #!/bin/bash
 # lightsOn.sh
-#set -x
+set -x
 
 # Copyright (c) 2013 iye.cba at gmail com
 # url: https://github.com/iye/lightsOn
@@ -190,6 +190,12 @@ function isAppRunning() {
                     process=$(pidof "${app_name}")
                 fi
 
+            ;;
+
+            "popcorn-time")
+                if [[ "${activ_win_title}" = *${activ_app_name}* ]]; then
+                    process="$(pidof "${activ_app_name}")"
+                fi
             ;;
 
             *)
