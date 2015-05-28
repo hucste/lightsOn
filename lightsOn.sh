@@ -172,7 +172,7 @@ function isAppRunning() {
                 else
                     # other method to detect if flashplayer run
                     case "${app_name}" in
-                        "chromium-browser")
+                        "chromium-browser"|"google-chrome")
                             if [[ "$activ_win_title" = *${activ_app_name}* ]]; then
                                 process=$(pgrep -fc ".*((c|C)hrom(e|ium)).*flashp.*")
                             fi
@@ -187,7 +187,16 @@ function isAppRunning() {
                 fi
 
                 if [[ -z "${process}" && "${activ_win_title}" = *${activ_app_name}* ]]; then
-                    process=$(pidof "${app_name}")
+                    case "${app_name}")
+                        "google-chrome")
+                            if [[ "$activ_win_title" = *${activ_app_name}* ]]; then
+                                process="$(pidof chrome)"
+                            fi
+                        ;;
+                        *)
+                            process=$(pidof "${app_name}")
+                        ;;
+                    esac
                 fi
 
             ;;
