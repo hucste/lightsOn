@@ -187,7 +187,7 @@ function isAppRunning() {
                 fi
 
                 if [[ -z "${process}" && "${activ_win_title}" = *${activ_app_name}* ]]; then
-                    case "${app_name}")
+                    case "${app_name}" in
                         "google-chrome")
                             if [[ "$activ_win_title" = *${activ_app_name}* ]]; then
                                 process="$(pidof chrome)"
