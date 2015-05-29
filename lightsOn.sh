@@ -53,9 +53,8 @@ declare -a screensavers=("cinnamon-screensaver" "gnome-screensaver" "kscreensave
 delay="$1"
 displays=""
 
-LOCKFILE="/var/run/lock/$(basename $0)" ;
-#pwd="$(cd "$(dirname "$0")" && pwd)"
-pwd="$(dirname $(readlink -f $0))"
+LOCKFILE="/var/run/lock/$(basename "$0")" ;
+pwd="$(dirname "$(readlink -f "$0")")"
 
 function checkDelayProgs() {
     for prog in "${delay_progs[@]}"; do
@@ -124,7 +123,7 @@ function detect_screensaver_used() {
 function icon_into_systray() {
 
     # launch icon into systray
-    ${pwd}/indicator.py &
+    "${pwd}"/launcher_indicator.py &
 
     }
 
@@ -149,7 +148,7 @@ function isAppRunning() {
     # check if active windows is mplayer, vlc or firefox...
 
     #Get title of active window
-    activ_win_id="$(xprop -id ${activ_win_id})"
+    activ_win_id=$(xprop -id "${activ_win_id}")
 
     activ_win_pid="$(grep "_NET_WM_PID(CARDINAL)" <<< "${activ_win_id}")"
     activ_win_pid=${activ_win_pid##* }
@@ -167,7 +166,7 @@ function isAppRunning() {
 
             "chromium-browser"|"firefox"|"google-chrome"|"opera")
                 # detect if flashplayer run
-                if $(lsof -p ${activ_win_pid} | grep -i "flashplayer.so"); then
+                if lsof -p "${activ_win_pid}" | grep -i "flashplayer.so"; then
                     process=$(pidof "${activ_app_name}")
                 else
                     # other method to detect if flashplayer run
@@ -236,7 +235,7 @@ function delayScreensaver() {
 
     #Check if DPMS is on. If it is, deactivate and reactivate again. If it is not, do nothing.
     dpmsStatus="$(xset -q | grep -ce 'DPMS is Enabled')"
-    if [ ${dpmsStatus} -eq 1 ]; then xset -dpms; fi
+    if [[ ${dpmsStatus} -eq 1 ]]; then xset -dpms; fi
 
 }
 
@@ -275,14 +274,14 @@ function start() {
     while true; do
         checkDelayProgs
         checkFullscreen
-        sleep ${delay}
+        sleep "${delay}"
     done
 
     }
 
 function stop() {
 
-    kill -9 ${pid}
+    kill -9 "${pid}"
     if [[ -e "${LOCKFILE}" ]]; then rm "${LOCKFILE}"; fi
 
     exit 0

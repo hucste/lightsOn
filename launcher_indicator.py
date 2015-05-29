@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 # -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
 
+#
+# # Authors informations
+#
+# @author: HUC Stéphane
+# @email: <devs@stephane-huc.net>
+# @url: http://stephane-huc.net
+#
+# @license : GNU/GPL 3
+#
+
 ''' Script python to Launc Application Indicator for script lightsOn.sh '''
 
 import platform

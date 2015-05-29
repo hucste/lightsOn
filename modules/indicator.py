@@ -1,11 +1,33 @@
 #!/usr/bin/env python
 # -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
 
-''' Modules AppIndicator for python 2.x '''
+#
+# # Authors informations
+#
+# @author: HUC Stéphane
+# @email: <devs@stephane-huc.net>
+# @url: http://stephane-huc.net
+#
+# @license : GNU/GPL 3
+#
+
+''' Module AppIndicator for python 2.x '''
 
 import os
 import subprocess
 import sys
+
+try:
+    import appindicator
+    HAS_INDICATOR = True
+except ImportError:
+    print 'Cant import appindicator'
+    HAS_INDICATOR = False
+
+try:
+    import gtk
+except ImportError:
+    print 'Cant import gtk'
 
 try:
     import pygtk
@@ -13,50 +35,57 @@ try:
 except ImportError:
     print 'Cant import pygtk'
 
-try:
-    import gtk as Gtk
-except ImportError:
-    print 'Cant import gtk'
-
-try:
-    import appindicator
-except ImportError:
-    print 'Cant import appindicator'
-
 
 class AppIndicator(object):
     ''' Create an application indicator '''
 
     def __init__(self):
-        self.ind = appindicator.Indicator("lightsOn_indicator",
-            "indicator-messages", appindicator.CATEGORY_APPLICATION_STATUS)
-        self.ind.set_status(appindicator.STATUS_ACTIVE)
-        #self.ind.set_attention_icon("indicator-messages-new")
-        self.ind.set_icon("preferences-desktop-screensaver")
-
         # create a menu
-        self.menu = Gtk.Menu()
+        self.menu = gtk.Menu()
 
-        image = Gtk.ImageMenuItem(Gtk.STOCK_QUIT)
-        image.connect("activate", self.quit)
-        image.show()
-        self.menu.append(image)
+        self.img = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+        self.img.connect('activate', self.on_item_quit_activate)
 
-        self.menu.show()
+        if HAS_INDICATOR:
+            self.ind = appindicator.Indicator('lightsOn_indicator',
+                'indicator-messages', appindicator.CATEGORY_APPLICATION_STATUS)
+            self.ind.set_status(appindicator.STATUS_ACTIVE)
+            #self.ind.set_attention_icon('indicator-messages-new')
+            self.ind.set_icon('preferences-desktop-screensaver')
 
-        self.ind.set_menu(self.menu)
+            self.img.show()
 
-    def quit(self, widget, data=None):
+            self.menu.append(self.img)
+            self.menu.show()
+
+            self.ind.set_menu(self.menu)
+
+        else:
+            self.ind = gtk.StatusIcon()
+            self.ind.connect('popup-menu', self.popup_menu_icon)
+            self.ind.set_from_icon_name('preferences-desktop-screensaver')
+            self.ind.set_title('LightsOn')
+            self.ind.set_visible(True)
+
+    def popup_menu_icon(self, ind, button, activate_time):
+        ''' Show menu by popup when clic into icon '''
+
+        self.menu.append(self.img)
+        self.menu.popup(None, None, gtk.status_icon_position_menu, button,
+            activate_time, ind)
+        self.menu.show_all()
+
+    def on_item_quit_activate(self, widget, data=None):
         ''' Method to quit '''
         # launch script with option stop
-        #folder = os.path.dirname(sys.argv[0])
         folder = os.path.dirname(os.path.abspath(sys.argv[0]))
         script = folder + '/lightsOn.sh stop'
         subprocess.call(script, shell=True)
 
-        Gtk.main_quit()
+        gtk.main_quit()
 
-    def main(self):
+    @staticmethod
+    def main():
         ''' Main method '''
-        Gtk.main()
+        gtk.main()
         return 0
