@@ -56,6 +56,23 @@ displays=""
 LOCKFILE="/var/run/lock/$(basename "$0")" ;
 pwd="$(dirname "$(readlink -f "$0")")"
 
+function activeScreensaver() {
+
+    case "${screensaver}" in
+        "cinnamon-screensaver") cinnamon-screensaver-command --activate > /dev/null ;;
+        "gnome-screensaver") gnome-screensaver-command --activate > /dev/null ;;
+        "kscreensaver") qdbus org.kde.ksmserver /ScreenSaver SetActive false > /dev/null ;;
+        "xautolock")
+            xautolock -enable
+        ;;
+        "xscreensaver") xscreensaver-command -activate > /dev/null ;;
+    esac
+
+    # Activate DPMS is on.
+    xset dpms
+
+    }
+
 function checkDelayProgs() {
     for prog in "${delay_progs[@]}"; do
         if [[ $(pidof "${prog}") -ge 1 ]]; then
@@ -90,7 +107,7 @@ function checkFullscreen() {
             #else
                 #xset dpms
             #fi
-            if isAppRunning; then delayScreensaver; else xset dpms; fi
+            if isAppRunning; then delayScreensaver; else activeScreensaver; fi
         fi
 
     done
@@ -228,7 +245,7 @@ function delayScreensaver() {
         "kscreensaver") qdbus org.freedesktop.ScreenSaver /ScreenSaver SimulateUserActivity > /dev/null ;;
         "xautolock")
             xautolock -disable
-            xautolock -enable
+            #xautolock -enable
         ;;
         "xscreensaver") xscreensaver-command -deactivate > /dev/null ;;
     esac
