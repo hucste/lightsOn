@@ -40,7 +40,7 @@ clear
 
 declare -a APPS=("chromium-browser" "firefox" "google-chrome" "opera")
 APPS=("${APPS[@]}" "gnome-mplayer" "mplayer" "mplayer2" "mpv" "smplayer" "totem" "vlc")
-APPS=("${APPS[@]}" "minitube" "popcorn-time" "smtube")
+APPS=("${APPS[@]}" "minitube" "popcorn-time" "skype" "smtube")
 APPS=("${APPS[@]}" "plugin-container") # plugin-container is for flashplayer
 
 # Names of programs which, when running, you wish to delay the screensaver.
@@ -215,7 +215,7 @@ function isAppRunning() {
 
     fi
 
-    if [[ -n ${process} ]]; then return 0; else return 1; fi
+    if [[ -n ${process} ]]; then unset process; return 0; else return 1; fi
 
     }
 
