@@ -58,15 +58,15 @@ pwd="$(dirname "$(readlink -f "$0")")"
 
 function activeScreensaver() {
 
-    case "${screensaver}" in
-        "cinnamon-screensaver") cinnamon-screensaver-command --activate > /dev/null ;;
-        "gnome-screensaver") gnome-screensaver-command --activate > /dev/null ;;
-        "kscreensaver") qdbus org.kde.ksmserver /ScreenSaver SetActive false > /dev/null ;;
-        "xautolock")
-            xautolock -enable
-        ;;
-        "xscreensaver") xscreensaver-command -activate > /dev/null ;;
-    esac
+    #case "${screensaver}" in
+        #"cinnamon-screensaver") cinnamon-screensaver-command --activate > /dev/null ;;
+        #"gnome-screensaver") gnome-screensaver-command --activate > /dev/null ;;
+        #"kscreensaver") qdbus org.kde.ksmserver /ScreenSaver SetActive false > /dev/null ;;
+        #"xautolock")
+            #xautolock -enable
+        #;;
+        #"xscreensaver") xscreensaver-command -activate > /dev/null ;;
+    #esac
 
     # Activate DPMS is on.
     xset dpms
