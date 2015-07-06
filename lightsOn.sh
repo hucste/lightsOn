@@ -170,69 +170,77 @@ function isAppRunning() {
     activ_win_pid="$(grep "_NET_WM_PID(CARDINAL)" <<< "${activ_win_id}")"
     activ_win_pid=${activ_win_pid##* }
 
-    activ_win_title="$(grep "WM_CLASS(STRING)" <<< "${activ_win_id}")"   # I used WM_NAME(STRING) before, WM_CLASS more accurate.
+    #activ_win_title="$(grep "WM_CLASS(STRING)" <<< "${activ_win_id}")"   # I used WM_NAME(STRING) before, WM_CLASS more accurate.
 
-    activ_app_name="$(echo "${activ_win_title}" | awk -F "," '{print $2}'  | tr -s ' ')"  # just name app
-    activ_app_name="${activ_app_name:2:-1}"
+    #if [[ -n "${activ_win_title}" ]]; then
+        #activ_app_name="$(echo "${activ_win_title}" | awk -F "," '{print $2}'  | tr -s ' ')"  # just name app
+        #activ_app_name="${activ_app_name:2:-1}"
 
-    app_name="$(awk '{print tolower($0)}' <<< "${activ_app_name}")"   # app name string lower
+        #app_name="$(awk '{print tolower($0)}' <<< "${activ_app_name}")"   # app name string lower
+    #else
+        #app_name="$(awk '{print tolower($0)}' <<< $(basename $(lsof -aFn -p ${activ_win_pid} -d txt | sed -ne 's/^n//p')))"
+    #fi
 
-    if in_array "${app_name}" "${APPS[@]}"; then
+    app_name="$(awk '{print tolower($0)}' <<< $(basename $(lsof -aFn -p ${activ_win_pid} -d txt | sed -ne 's/^n//p')))"
 
-        case "${app_name}" in
+    if in_array "${app_name}" "${APPS[@]}"; then return 0; else return 1; fi
 
-            "chromium-browser"|"firefox"|"google-chrome"|"opera")
-                # detect if flashplayer run
-                if lsof -p "${activ_win_pid}" | grep -i "flashplayer.so"; then
-                    process=$(pidof "${activ_app_name}")
-                else
-                    # other method to detect if flashplayer run
-                    case "${app_name}" in
-                        "chromium-browser"|"google-chrome")
-                            if [[ "$activ_win_title" = *${activ_app_name}* ]]; then
-                                process=$(pgrep -fc ".*((c|C)hrom(e|ium)).*flashp.*")
-                            fi
-                        ;;
-                        "firefox")
-                            if [[ "$activ_win_title" = *unknown* || "$activ_win_title" = *plugin-container* ]]; then
-                                process=$(pgrep -l plugin-containe | grep -wc plugin-containe)
-                            fi
-                        ;;
-                    esac
+    #if in_array "${app_name}" "${APPS[@]}"; then
 
-                fi
+        #case "${app_name}" in
 
-                if [[ -z "${process}" && "${activ_win_title}" = *${activ_app_name}* ]]; then
-                    case "${app_name}" in
-                        "google-chrome")
-                            if [[ "$activ_win_title" = *${activ_app_name}* ]]; then
-                                process="$(pidof chrome)"
-                            fi
-                        ;;
-                        *)
-                            process=$(pidof "${app_name}")
-                        ;;
-                    esac
-                fi
+            #"chromium-browser"|"firefox"|"google-chrome"|"opera")
+                ## detect if flashplayer run
+                #if lsof -p "${activ_win_pid}" | grep -i "flashplayer.so"; then
+                    #process=$(pidof "${activ_app_name}")
+                #else
+                    ## other method to detect if flashplayer run
+                    #case "${app_name}" in
+                        #"chromium-browser"|"google-chrome")
+                            #if [[ "$activ_win_title" = *${activ_app_name}* ]]; then
+                                #process=$(pgrep -fc ".*((c|C)hrom(e|ium)).*flashp.*")
+                            #fi
+                        #;;
+                        #"firefox")
+                            #if [[ "$activ_win_title" = *unknown* || "$activ_win_title" = *plugin-container* ]]; then
+                                #process=$(pgrep -l plugin-containe | grep -wc plugin-containe)
+                            #fi
+                        #;;
+                    #esac
 
-            ;;
+                #fi
 
-            "popcorn-time")
-                if [[ "${activ_win_title}" = *${activ_app_name}* ]]; then
-                    process="$(pidof "${activ_app_name}")"
-                fi
-            ;;
+                #if [[ -z "${process}" && "${activ_win_title}" = *${activ_app_name}* ]]; then
+                    #case "${app_name}" in
+                        #"google-chrome")
+                            #if [[ "$activ_win_title" = *${activ_app_name}* ]]; then
+                                #process="$(pidof chrome)"
+                            #fi
+                        #;;
+                        #*)
+                            #process=$(pidof "${app_name}")
+                        #;;
+                    #esac
+                #fi
 
-            *)
-                if [[ "${activ_win_title}" = *${activ_app_name}* ]]; then
-                    process=$(pidof "${app_name}")
-                fi
-            ;;
-        esac
+            #;;
 
-    fi
+            #"popcorn-time")
+                #if [[ "${activ_win_title}" = *${activ_app_name}* ]]; then
+                    #process="$(pidof "${activ_app_name}")"
+                #fi
+            #;;
 
-    if [[ -n ${process} ]]; then unset process; return 0; else return 1; fi
+            #*)
+                #if [[ "${activ_win_title}" = *${activ_app_name}* ]]; then
+                    #process=$(pidof "${app_name}")
+                #fi
+            #;;
+        #esac
+
+    #fi
+
+    #if [[ -n ${process} ]]; then unset process; return 0; else return 1; fi
 
     }
 
