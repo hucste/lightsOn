@@ -41,7 +41,8 @@ clear
 declare -a APPS=("chromium-browser" "firefox" "google-chrome" "opera")
 APPS=("${APPS[@]}" "gnome-mplayer" "mplayer" "mplayer2" "mpv" "smplayer" "totem" "vlc")
 APPS=("${APPS[@]}" "minitube" "popcorn-time" "skype" "smtube")
-APPS=("${APPS[@]}" "plugin-container") # plugin-container is for flashplayer
+# for plugins
+APPS=("${APPS[@]}" "operapluginwrapper-native" "plugin-container")
 
 # Names of programs which, when running, you wish to delay the screensaver.
 delay_progs=() # For example ('ardour2' 'gmpc')
@@ -170,6 +171,10 @@ function isAppRunning() {
     activ_win_pid="$(grep "_NET_WM_PID(CARDINAL)" <<< "${activ_win_id}")"
     activ_win_pid=${activ_win_pid##* }
 
+    app_name="$(awk '{print tolower($0)}' <<< $(basename $(lsof -aFn -p ${activ_win_pid} -d txt | sed -ne 's/^n//p')))"
+
+    if in_array "${app_name}" "${APPS[@]}"; then return 0; else return 1; fi
+
     #activ_win_title="$(grep "WM_CLASS(STRING)" <<< "${activ_win_id}")"   # I used WM_NAME(STRING) before, WM_CLASS more accurate.
 
     #if [[ -n "${activ_win_title}" ]]; then
@@ -180,10 +185,6 @@ function isAppRunning() {
     #else
         #app_name="$(awk '{print tolower($0)}' <<< $(basename $(lsof -aFn -p ${activ_win_pid} -d txt | sed -ne 's/^n//p')))"
     #fi
-
-    app_name="$(awk '{print tolower($0)}' <<< $(basename $(lsof -aFn -p ${activ_win_pid} -d txt | sed -ne 's/^n//p')))"
-
-    if in_array "${app_name}" "${APPS[@]}"; then return 0; else return 1; fi
 
     #if in_array "${app_name}" "${APPS[@]}"; then
 
